@@ -1,9 +1,8 @@
 from enum import Enum
 from dataclasses import dataclass
-from typing import Union
 
 
-class LoadState(Enum):
+class PetrovLoadState(Enum):
     LOADING = "loading"
     SUCCESS = "success"
     ERROR = "error"
@@ -17,24 +16,26 @@ class User:
 
 
 @dataclass(frozen=True)
-class Success:
-    value: list[User]
+class Success[T]:
+    value: T
 
 
 @dataclass(frozen=True)
-class Failure:
-    error: str
+class Failure[E]:
+    error: E
 
 
-def load_users(users: list[User]) -> Union[Success, Failure]:
-    return (
-        Success(users)
-        if users
-        else Failure("Список пользователей пуст")
-    )
+type Result[T, E] = Success[T] | Failure[E]
 
 
-print(load_users([
+def petrov_load_users(users: list[User]) -> Result[list[User], str]:
+    return {
+        True: lambda: Success(users),
+        False: lambda: Failure("Список пользователей пуст"),
+    }[bool(users)]()
+
+
+print(petrov_load_users([
     User("Анна", 25, "anna@example.com"),
     User("Иван", 30, "ivan@example.com")
 ]))
