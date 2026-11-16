@@ -29,10 +29,7 @@ type Result[T, E] = Success[T] | Failure[E]
 
 
 def petrov_load_users(users: list[User]) -> Result[list[User], str]:
-    return {
-        True: lambda: Success(users),
-        False: lambda: Failure("Список пользователей пуст"),
-    }[bool(users)]()
+    return Success(users) if users else Failure("Список пользователей пуст")
 
 
 print(petrov_load_users([
